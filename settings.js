@@ -392,27 +392,23 @@ export const SettingsModal = {
 
     let llmProviderSettingsHtml = "";
     for (const [name, provider] of Object.entries(llm.AVAILABLE_PROVIDERS)) {
-      const apiPrefKey = PREFS[`${name.toUpperCase()}_API_KEY`];
-      const modelPrefKey = PREFS[`${name.toUpperCase()}_MODEL`];
+      const apiPrefKey = PREFS[`${name.toUpperCase()}_API_KEY`] || provider.apiPref || `${name}-api-key`;
+      const modelPrefKey = PREFS[`${name.toUpperCase()}_MODEL`] || provider.modelPref || `${name}-model`;
 
-      const apiInputHtml = apiPrefKey
-        ? `
+      const apiInputHtml = `
         <div class="setting-item">
           <label for="pref-${this._getSafeIdForProvider(name)}-api-key">API Key</label>
           <input type="password" id="pref-${this._getSafeIdForProvider(name)}-api-key" data-pref="${apiPrefKey}" placeholder="Enter ${provider.label} API Key" />
         </div>
-      `
-        : "";
+      `;
 
       // Placeholder for the XUL menulist, which will be inserted dynamically in createModalElement
-      const modelSelectPlaceholderHtml = modelPrefKey
-        ? `
+      const modelSelectPlaceholderHtml = `
         <div class="setting-item">
           <label for="pref-${this._getSafeIdForProvider(name)}-model">Model</label>
           <div id="llm-model-selector-placeholder-${this._getSafeIdForProvider(name)}"></div>
         </div>
-      `
-        : "";
+      `;
 
       llmProviderSettingsHtml += `
         <div id="${this._getSafeIdForProvider(name)}-settings-group" class="provider-settings-group">
