@@ -340,6 +340,7 @@ export const SettingsModal = {
     const aiBehaviorSettings = [
       { label: "Enable Citations", pref: PREFS.CITATIONS_ENABLED },
       { label: "God Mode (AI can use tool calls)", pref: PREFS.GOD_MODE },
+      { label: "Agent Mode (allow autonomous agent actions)", pref: PREFS.AGENT_MODE },
       { label: "Conformation before tool call", pref: PREFS.CONFORMATION },
     ];
     const aiBehaviorWarningHtml = `

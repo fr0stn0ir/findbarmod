@@ -8,6 +8,7 @@ export const PREFS = {
   SOLID_BG: "extension.browse-bot.solid-bg",
 
   GOD_MODE: "extension.browse-bot.god-mode",
+  AGENT_MODE: "extension.browse-bot.agent-mode",
   CITATIONS_ENABLED: "extension.browse-bot.citations-enabled",
   MAX_TOOL_CALLS: "extension.browse-bot.max-tool-calls",
   CONFORMATION: "extension.browse-bot.conform-before-tool-call",
@@ -70,6 +71,13 @@ export const PREFS = {
   },
   get godMode() {
     return this.getPref(this.GOD_MODE);
+  },
+
+  set agentMode(value) {
+    this.setPref(this.AGENT_MODE, value);
+  },
+  get agentMode() {
+    return this.getPref(this.AGENT_MODE);
   },
 
   get citationsEnabled() {
@@ -224,6 +232,7 @@ PREFS.defaultValues = {
   [PREFS.PERPLEXITY_MODEL]: "pplx-7b-chat",
   [PREFS.DND_ENABLED]: true,
   [PREFS.POSITION]: "top-right",
+  [PREFS.AGENT_MODE]: false,
   [PREFS.MAX_TOOL_CALLS]: 5,
   [PREFS.CONFORMATION]: true,
   // [PREFS.COPY_BTN_ENABLED]: true,

@@ -24,13 +24,35 @@ async function executeToolCalls(llmInstance, requestBody, modelResponse, current
   const toolNames = functionCalls.map((call) => call.functionCall.name);
 
   let confirmed = true;
-  if (PREFS.conformation) {
-    confirmed = await window.browserBotFindbar.createToolConfirmationDialog(toolNames);
+  // If agentMode is enabled we allow the model to run sequences autonomously (but only when godMode is also enabled).
+  if (!PREFS.agentMode) {
+    if (PREFS.conformation) {
+      confirmed = await window.browserBotFindbar.createToolConfirmationDialog(toolNames);
+    }
+  } else {
+    // Agent mode requires god mode; enforce it
+    if (!PREFS.godMode) {
+      debugLog("Agent mode requested but godMode is disabled. Cancelling tool execution.");
+      confirmed = false;
+    }
   }
 
   const functionResponses = [];
   if (confirmed) {
+    try {
+      window.browserBotFindbar?.startAgentSession?.();
+    } catch (e) {
+      debugError("Failed to start agent session UI:", e);
+    }
     for (const call of functionCalls) {
+      // Allow the UI to request an immediate stop of the agent between calls
+      if (window.browserBotFindbar?.agentShouldStop) {
+        debugLog("Agent stopped by user between tool calls.");
+        functionResponses.push({
+          functionResponse: { name: "__agent_stopped__", response: { error: "Agent stopped by user." } },
+        });
+        break;
+      }
       const { name, args } = call.functionCall;
 
       if (availableTools[name]) {
@@ -49,6 +71,11 @@ async function executeToolCalls(llmInstance, requestBody, modelResponse, current
           },
         });
       }
+    }
+    try {
+      window.browserBotFindbar?.stopAgentSession?.();
+    } catch (e) {
+      debugError("Failed to stop agent session UI:", e);
     }
   } else {
     debugLog("Tool execution cancelled by user.");

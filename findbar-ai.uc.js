@@ -63,6 +63,7 @@ const browserBotfindbar = {
   _handleResize: null,
   _handleResizeEnd: null,
   _toolConfirmationDialog: null,
+  agentShouldStop: false,
 
   get expanded() {
     return this._isExpanded;
@@ -426,6 +427,20 @@ const browserBotfindbar = {
 
     const chatHeader = container.querySelector(".ai-chat-header");
 
+    const stopAgentBtn = parseElement(
+      `
+        <toolbarbutton 
+          id="stop-agent-btn"
+          class="stop-agent-btn"
+          image="chrome://global/skin/icons/stop.svg"
+          tooltiptext="Stop Agent"
+          style="display:none"
+        />`,
+      "xul"
+    );
+    stopAgentBtn.addEventListener("click", () => this.stopAgentSession());
+    chatHeader.appendChild(stopAgentBtn);
+
     const clearBtn = parseElement(
       `
         <toolbarbutton 
@@ -594,6 +609,18 @@ const browserBotfindbar = {
   focusPrompt() {
     const promptInput = this.chatContainer?.querySelector("#ai-prompt");
     if (promptInput) setTimeout(() => promptInput.focus(), 10);
+  },
+
+  startAgentSession() {
+    this.agentShouldStop = false;
+    const btn = this.chatContainer?.querySelector("#stop-agent-btn");
+    if (btn) btn.style.display = "inline-block";
+  },
+
+  stopAgentSession() {
+    this.agentShouldStop = true;
+    const btn = this.chatContainer?.querySelector("#stop-agent-btn");
+    if (btn) btn.style.display = "none";
   },
   setPromptText(text) {
     const promptInput = this?.chatContainer?.querySelector("#ai-prompt");
